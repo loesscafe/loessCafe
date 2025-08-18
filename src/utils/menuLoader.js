@@ -2,54 +2,48 @@
 
 export const loadMenuData = async () => {
   try {
-    // Tüm menü öğesi dosyalarını yükle
-    const context = require.context('../data/items', false, /\.json$/);
-    const menuItems = {};
-    
-    // Her kategori için boş array oluştur
+    // Menü verilerini public/data/items/menu.json'dan çek
+    const res = await fetch('/data/items/menu.json');
+    if (!res.ok) throw new Error('Menü verisi bulunamadı');
+    const data = await res.json();
+
+    // Kategorileri kontrol et, eksikse boş array ata
     const categories = [
-      'sicakIcecekler', 'turkKahvesi', 'sicakKahveler', 
-      'sogukKahveler', 'frozenMilkshake', 'spesiyel', 
+      'sicakIcecekler', 'turkKahvesi', 'sicakKahveler',
+      'sogukKahveler', 'frozenMilkshake', 'spesiyel',
       'mesrubatlar', 'tatlilar'
     ];
-    
+
     categories.forEach(cat => {
-      menuItems[cat] = [];
+      if (!data[cat]) data[cat] = [];
     });
 
-    // JSON dosyalarını oku ve kategorilere göre grupla
-    context.keys().forEach(key => {
-      try {
-        const item = context(key);
-        const category = item.category;
-        
-        if (menuItems[category]) {
-          menuItems[category].push(item);
-        }
-      } catch (error) {
-        console.warn(`Menü öğesi yüklenemedi: ${key}`, error);
-      }
-    });
+    return data;
+  } catch (err) {
+    console.error('Menü verisi yüklenirken hata:', err);
 
-    // Her kategorideki öğeleri ID'ye göre sırala
-    Object.keys(menuItems).forEach(category => {
-      menuItems[category].sort((a, b) => (a.id || 0) - (b.id || 0));
-    });
-
-    return menuItems;
-  } catch (error) {
-    console.error('Menü verileri yüklenirken hata:', error);
-    // Fallback olarak mevcut statik veriyi döndür
-    return require('../data/menuData').default;
+    // Fallback: boş menü
+    return {
+      sicakIcecekler: [],
+      turkKahvesi: [],
+      sicakKahveler: [],
+      sogukKahveler: [],
+      frozenMilkshake: [],
+      spesiyel: [],
+      mesrubatlar: [],
+      tatlilar: []
+    };
   }
 };
 
 export const loadCafeInfo = async () => {
   try {
-    const cafeInfo = await import('../data/cafeInfo.json');
-    return cafeInfo.default || cafeInfo;
-  } catch (error) {
-    console.warn('Kafe bilgileri yüklenemedi, varsayılan değerler kullanılıyor:', error);
+    const res = await fetch('/data/cafeInfo.json');
+    if (!res.ok) throw new Error('Kafe bilgisi bulunamadı');
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.warn('Kafe bilgileri yüklenemedi, varsayılan değerler kullanılıyor:', err);
     return {
       name: "LOESS",
       mainSlogan: "Bohem dokunuş, eşsiz lezzet",
