@@ -1,13 +1,16 @@
-  //src/components/Menu.js
+// src/components/Menu.js
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Coffee, Thermometer, Snowflake, Martini, Wine, Cookie, Droplets, ChevronDown } from 'lucide-react';
-import menuData from '../data/menuData';
+import { loadMenuData, loadCafeInfo } from '../utils/menuLoader';
 import './Menu.css';
 
 const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState('sicakIcecekler');
   const [showWelcome, setShowWelcome] = useState(true);
+  const [menuData, setMenuData] = useState({});
+  const [cafeInfo, setCafeInfo] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef(null);
 
   const categories = [
@@ -21,6 +24,28 @@ const Menu = () => {
     { id: 'tatlilar', name: 'Tatlılar', icon: Cookie }
   ];
 
+  // Veri yükleme
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const [loadedMenuData, loadedCafeInfo] = await Promise.all([
+          loadMenuData(),
+          loadCafeInfo()
+        ]);
+        
+        setMenuData(loadedMenuData);
+        setCafeInfo(loadedCafeInfo);
+      } catch (error) {
+        console.error('Veri yükleme hatası:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
   const scrollToMenu = () => {
     setShowWelcome(false);
     setTimeout(() => {
@@ -30,22 +55,39 @@ const Menu = () => {
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    // Kategori değişince menünün başına scroll et
     setTimeout(() => {
       menuRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
+  // Yükleme ekranı
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-content">
+          <div className="loading-spinner"></div>
+          <p>Menü yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (showWelcome) {
     return (
       <div className="welcome-screen">
         <div className="welcome-content">
-         <div className="logo-container">
-  <div className="logo-icon">
-  <img src="/images/kahve-icon.png" alt="Kahve Logo" className="logo-png" />
-  </div>
-  <p className="main-slogan">Bohem dokunuş, eşsiz lezzet</p>
-</div>
+          <div className="logo-container">
+            <div className="logo-icon">
+              <img 
+                src={cafeInfo.logo || "/images/kahve-icon.png"} 
+                alt="Kahve Logo" 
+                className="logo-png" 
+              />
+            </div>
+            <p className="main-slogan">
+              {cafeInfo.mainSlogan || "Bohem dokunuş, eşsiz lezzet"}
+            </p>
+          </div>
 
           <button onClick={scrollToMenu} className="menu-button">
             <span>MENÜYE GİT</span>
@@ -61,8 +103,10 @@ const Menu = () => {
       {/* Header */}
       <div className="header">
         <div className="header-content">
-          <h1 className="logo">LOESS</h1>
-          <p className="slogan">Bohem atmosferde lezzet yolculuğu</p>
+          <h1 className="logo">{cafeInfo.name || "LOESS"}</h1>
+          <p className="slogan">
+            {cafeInfo.subSlogan || "Bohem atmosferde lezzet yolculuğu"}
+          </p>
           <div className="divider"></div>
         </div>
       </div>
@@ -72,6 +116,11 @@ const Menu = () => {
         <div className="nav-container">
           {categories.map((category) => {
             const IconComponent = category.icon;
+            const itemCount = menuData[category.id]?.length || 0;
+            
+            // Eğer kategoride hiç öğe yoksa gizle
+            if (itemCount === 0) return null;
+            
             return (
               <button
                 key={category.id}
@@ -80,6 +129,7 @@ const Menu = () => {
               >
                 <IconComponent size={18} />
                 <span>{category.name}</span>
+                <small className="item-count">({itemCount})</small>
               </button>
             );
           })}
@@ -111,7 +161,11 @@ const Menu = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )) || (
+            <div className="empty-category">
+              <p>Bu kategoride henüz ürün bulunmuyor.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -119,17 +173,17 @@ const Menu = () => {
       <div className="footer">
         <div className="footer-content">
           <div className="footer-brand">
-            <h3 className="footer-title">LOESS</h3>
+            <h3 className="footer-title">{cafeInfo.name || "LOESS"}</h3>
           </div>
           
           <div className="footer-contact">
             <div className="contact-item">
               <span className="contact-emoji">📞</span>
-              <span>0XXX XXX XX XX</span>
+              <span>{cafeInfo.phone || "0XXX XXX XX XX"}</span>
             </div>
             <div className="contact-item">
               <span className="contact-emoji">🕐</span>
-              <span>14:00 - 02:00</span>
+              <span>{cafeInfo.openingTime || "14:00"} - {cafeInfo.closingTime || "02:00"}</span>
             </div>
           </div>
         </div>
