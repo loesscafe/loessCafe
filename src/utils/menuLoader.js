@@ -1,3 +1,5 @@
+// src/utils/menuLoader.js
+
 export const loadMenuData = async () => {
   try {
     const categories = [
@@ -19,6 +21,7 @@ export const loadMenuData = async () => {
     });
 
     try {
+      // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
       
       context.keys().forEach(key => {
@@ -57,6 +60,25 @@ export const loadMenuData = async () => {
       spesiyel: [],
       mesrubatlar: [],
       tatlilar: []
+    };
+  }
+};
+
+export const loadCafeInfo = async () => {
+  try {
+    const cafeInfo = await import('../data/cafeInfo.json');
+    return cafeInfo.default || cafeInfo;
+  } catch (error) {
+    console.warn('Cafe info yüklenemedi:', error);
+    // Varsayılan değerler
+    return {
+      name: "LOESS",
+      mainSlogan: "Bohem dokunuş, eşsiz lezzet",
+      subSlogan: "Bohem atmosferde lezzet yolculuğu",
+      phone: "0XXX XXX XX XX",
+      openingTime: "14:00",
+      closingTime: "02:00",
+      logo: "/images/kahve-icon.png"
     };
   }
 };
