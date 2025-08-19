@@ -41,9 +41,15 @@ export const loadMenuData = async () => {
       console.warn('Items klasörü bulunamadı veya boş:', error);
     }
 
-    // Her kategoriyi ID'ye göre sırala
+    // Her kategoriyi ID'ye göre sırala - EN KÜÇÜK ID (İLK EKLENİLEN) EN ÜSTTE
     Object.keys(menuData).forEach(category => {
-      menuData[category].sort((a, b) => (a.id || 0) - (b.id || 0));
+      menuData[category].sort((a, b) => {
+        const idA = a.id || 0;
+        const idB = b.id || 0;
+        
+        // Küçükten büyüğe sırala (ilk eklenen en üstte)
+        return idA - idB;
+      });
     });
 
     return menuData;
