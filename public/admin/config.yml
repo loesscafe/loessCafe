@@ -6,9 +6,7 @@ site_url: https://loesscafe.netlify.app
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
-# Netlify'ın kendi media kütüphanesi
-media_library:
-  name: netlify
+# media_library kısmını tamamen kaldırın
 
 collections:
   - name: "menu-items"
@@ -35,7 +33,6 @@ collections:
       - {label: "Fiyat", name: "price", widget: "string"}
       - {label: "Açıklama", name: "description", widget: "text", required: false}
       - {label: "Fotoğraf", name: "image", widget: "image", required: false}
-      # ID alanını kaldırdık - otomatik oluşacak
 
   - name: "cafe-settings"
     label: "Kafe Ayarları"
