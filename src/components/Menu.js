@@ -60,6 +60,12 @@ const Menu = () => {
     }, 100);
   };
 
+  // ID oluşturma fonksiyonu - isim ve kategoriden unique ID oluştur
+  const generateId = (item, index) => {
+    if (item.id) return item.id;
+    return `${item.name?.replace(/\s+/g, '-').toLowerCase()}-${index}` || `item-${index}`;
+  };
+
   // Yükleme ekranı
   if (isLoading) {
     return (
@@ -139,26 +145,32 @@ const Menu = () => {
       {/* Menu Items */}
       <div className="menu-content">
         <div className="menu-grid">
-          {menuData[selectedCategory]?.map((item) => (
-            <div key={item.id} className="menu-item">
+          {menuData[selectedCategory]?.map((item, index) => (
+            <div key={generateId(item, index)} className="menu-item">
               <div className="item-content">
                 <div className="item-info">
                   <div className="item-header">
                     <h3 className="item-name">{item.name}</h3>
                     <span className="item-price">{item.price}</span>
                   </div>
-                  <p className="item-description">{item.description}</p>
+                  {/* Açıklama varsa göster */}
+                  {item.description && (
+                    <p className="item-description">{item.description}</p>
+                  )}
                 </div>
-                <div className="item-image-container">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="item-image"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop';
-                    }}
-                  />
-                </div>
+                {/* Resim varsa göster */}
+                {item.image && (
+                  <div className="item-image-container">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="item-image"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )) || (

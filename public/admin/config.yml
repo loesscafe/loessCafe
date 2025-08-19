@@ -6,11 +6,9 @@ site_url: https://loesscafe.netlify.app
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
-# Bu satırı ekle - medya dosyaları için izin
+# Netlify'ın kendi media kütüphanesi
 media_library:
-  name: uploadcare
-  config:
-    publicKey: your-uploadcare-key
+  name: netlify
 
 collections:
   - name: "menu-items"
@@ -35,9 +33,9 @@ collections:
           - {label: "Meşrubatlar", value: "mesrubatlar"}
           - {label: "Tatlılar", value: "tatlilar"}
       - {label: "Fiyat", name: "price", widget: "string"}
-      - {label: "Açıklama", name: "description", widget: "text"}
-      - {label: "Fotoğraf", name: "image", widget: "image"}
-      - {label: "ID", name: "id", widget: "number"}
+      - {label: "Açıklama", name: "description", widget: "text", required: false}
+      - {label: "Fotoğraf", name: "image", widget: "image", required: false}
+      # ID alanını kaldırdık - otomatik oluşacak
 
   - name: "cafe-settings"
     label: "Kafe Ayarları"
