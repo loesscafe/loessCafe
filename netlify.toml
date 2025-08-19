@@ -1,0 +1,18 @@
+[build]
+  publish = "build"
+  command = "CI=false npm run build"
+
+[build.environment]
+  CI = "false"
+
+# Admin panel için redirect
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+
+# SPA için catch-all redirect  
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
