@@ -10,7 +10,7 @@ collections:
     label: "Menü Öğeleri"
     folder: "src/data/items"
     create: true
-    slug: "{{category}}-{{fields.name}}"
+    slug: "{{fields.category}}-{{slug}}"
     format: 'json'
     extension: 'json'
     fields:
@@ -30,7 +30,7 @@ collections:
       - {label: "Fiyat", name: "price", widget: "string"}
       - {label: "Açıklama", name: "description", widget: "text"}
       - {label: "Fotoğraf", name: "image", widget: "image"}
-      - {label: "ID", name: "id", widget: "uuid"}
+      - {label: "ID", name: "id", widget: "number"}
 
   - name: "cafe-settings"
     label: "Kafe Ayarları"

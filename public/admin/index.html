@@ -1,37 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="LOESS Kafe - Bohem dokunuş, eşsiz lezzet"
-    />
-    <link rel="apple-touch-icon" href="/logo192.png" />
-    <link rel="manifest" href="/manifest.json" />
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .loading { text-align: center; padding: 50px; }
+    .error { color: red; padding: 20px; border: 1px solid red; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">
+    <h2>Admin Panel Yükleniyor...</h2>
+    <p>Lütfen bekleyin...</p>
+  </div>
+  
+  <div id="error" class="error" style="display: none;">
+    <h3>Yükleme Hatası</h3>
+    <p id="error-message"></p>
+  </div>
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  
+  <script>
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error-message').textContent = message;
+    }
     
-    <!-- Netlify Identity Widget -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    
-    <title>LOESS Kafe</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    
-    <!-- Netlify Identity Widget Script -->
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
+    function checkServices() {
+      console.log('Kontrol ediliyor...');
+      
+      // Netlify Identity kontrolü
+      if (!window.netlifyIdentity) {
+        showError('Netlify Identity yüklenemedi. İnternet bağlantınızı kontrol edin.');
+        return;
       }
-    </script>
-  </body>
+      
+      // Netlify CMS kontrolü
+      if (!window.CMS) {
+        showError('Netlify CMS yüklenemedi. CDN\'e erişim sorunu olabilir.');
+        return;
+      }
+      
+      // Config dosyası kontrolü
+      fetch('/admin/config.yml')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Config dosyası bulunamadı');
+          }
+          return response.text();
+        })
+        .then(config => {
+          console.log('Config yüklendi:', config);
+          document.getElementById('loading').innerHTML = '<h2>Admin panel başlatılıyor...</h2>';
+          
+          // Identity init
+          window.netlifyIdentity.on("init", user => {
+            console.log('Identity başlatıldı:', user);
+            if (!user) {
+              console.log('Kullanıcı giriş yapmamış, login ekranı gösteriliyor');
+              window.netlifyIdentity.open();
+            } else {
+              console.log('Kullanıcı giriş yapmış:', user.email);
+              document.getElementById('loading').innerHTML = '<h2>Hoş geldiniz ' + user.email + '</h2>';
+            }
+          });
+          
+          window.netlifyIdentity.on("login", () => {
+            console.log('Kullanıcı giriş yaptı');
+            window.location.reload();
+          });
+        })
+        .catch(error => {
+          showError('Config dosyası yüklenemedi: ' + error.message);
+        });
+    }
+    
+    // Sayfa yüklendikten sonra kontrol et
+    window.addEventListener('load', function() {
+      setTimeout(checkServices, 1000);
+    });
+  </script>
+</body>
 </html>
