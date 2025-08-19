@@ -3,86 +3,233 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel</title>
+  <title>LOESS Cafe - Admin Panel</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .loading { text-align: center; padding: 50px; }
-    .error { color: red; padding: 20px; border: 1px solid red; margin: 10px 0; }
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .loading { 
+      text-align: center; 
+      padding: 50px; 
+    }
+    .error { 
+      color: #d32f2f; 
+      padding: 20px; 
+      border: 2px solid #d32f2f; 
+      margin: 10px 0; 
+      border-radius: 8px;
+      background: #ffebee;
+    }
+    .success {
+      color: #388e3c;
+      padding: 20px;
+      border: 2px solid #388e3c;
+      margin: 10px 0;
+      border-radius: 8px;
+      background: #e8f5e8;
+    }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    .btn:hover {
+      background: #5a6fd8;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background: #f5f5f5;
+    }
   </style>
 </head>
 <body>
-  <div id="loading" class="loading">
-    <h2>Admin Panel Yükleniyor...</h2>
-    <p>Lütfen bekleyin...</p>
-  </div>
-  
-  <div id="error" class="error" style="display: none;">
-    <h3>Yükleme Hatası</h3>
-    <p id="error-message"></p>
+  <div class="container">
+    <h1>🏪 LOESS Cafe Admin</h1>
+    
+    <div id="loading" class="loading">
+      <h2>Admin Panel Hazırlanıyor...</h2>
+      <p>Lütfen bekleyin...</p>
+      <div id="status-info"></div>
+    </div>
+     
+    <div id="error" class="error" style="display: none;">
+      <h3>⚠️ Hata Oluştu</h3>
+      <p id="error-message"></p>
+      <button class="btn" onclick="location.reload()">🔄 Tekrar Dene</button>
+    </div>
+
+    <div id="success" class="success" style="display: none;">
+      <h3>✅ Başarılı</h3>
+      <p id="success-message"></p>
+    </div>
+
+    <div id="manual-actions" style="display: none; text-align: center;">
+      <h3>Manuel İşlemler</h3>
+      <button class="btn" onclick="openSignup()">📝 Kayıt Ol</button>
+      <button class="btn" onclick="openLogin()">🔑 Giriş Yap</button>
+      <button class="btn" onclick="checkUser()">👤 Kullanıcı Durumu</button>
+    </div>
   </div>
 
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-  
+     
   <script>
+    let statusDiv;
+    
+    function updateStatus(message) {
+      if (!statusDiv) {
+        statusDiv = document.getElementById('status-info');
+      }
+      const div = document.createElement('div');
+      div.className = 'status';
+      div.textContent = `✓ ${message}`;
+      statusDiv.appendChild(div);
+      console.log(message);
+    }
+
     function showError(message) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'block';
+      document.getElementById('manual-actions').style.display = 'block';
       document.getElementById('error-message').textContent = message;
     }
-    
-    function checkServices() {
-      console.log('Kontrol ediliyor...');
-      
-      // Netlify Identity kontrolü
-      if (!window.netlifyIdentity) {
-        showError('Netlify Identity yüklenemedi. İnternet bağlantınızı kontrol edin.');
-        return;
-      }
-      
-      // Netlify CMS kontrolü
-      if (!window.CMS) {
-        showError('Netlify CMS yüklenemedi. CDN\'e erişim sorunu olabilir.');
-        return;
-      }
-      
-      // Config dosyası kontrolü
-      fetch('/admin/config.yml')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Config dosyası bulunamadı');
-          }
-          return response.text();
-        })
-        .then(config => {
-          console.log('Config yüklendi:', config);
-          document.getElementById('loading').innerHTML = '<h2>Admin panel başlatılıyor...</h2>';
-          
-          // Identity init
-          window.netlifyIdentity.on("init", user => {
-            console.log('Identity başlatıldı:', user);
-            if (!user) {
-              console.log('Kullanıcı giriş yapmamış, login ekranı gösteriliyor');
-              window.netlifyIdentity.open();
-            } else {
-              console.log('Kullanıcı giriş yapmış:', user.email);
-              document.getElementById('loading').innerHTML = '<h2>Hoş geldiniz ' + user.email + '</h2>';
-            }
-          });
-          
-          window.netlifyIdentity.on("login", () => {
-            console.log('Kullanıcı giriş yaptı');
-            window.location.reload();
-          });
-        })
-        .catch(error => {
-          showError('Config dosyası yüklenemedi: ' + error.message);
-        });
+
+    function showSuccess(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+      document.getElementById('success-message').textContent = message;
     }
-    
-    // Sayfa yüklendikten sonra kontrol et
-    window.addEventListener('load', function() {
-      setTimeout(checkServices, 1000);
+
+    function openSignup() {
+      updateStatus('Kayıt formu açılıyor...');
+      netlifyIdentity.open('signup');
+    }
+
+    function openLogin() {
+      updateStatus('Giriş formu açılıyor...');
+      netlifyIdentity.open('login');
+    }
+
+    function checkUser() {
+      const user = netlifyIdentity.currentUser();
+      if (user) {
+        showSuccess(`Giriş yapılmış: ${user.email}`);
+        setTimeout(() => {
+          window.location.href = '/admin/';
+        }, 2000);
+      } else {
+        showError('Henüz giriş yapılmamış');
+      }
+    }
+
+    async function initializeAdmin() {
+      try {
+        updateStatus('Netlify Identity kontrol ediliyor...');
+        
+        if (!window.netlifyIdentity) {
+          throw new Error('Netlify Identity yüklenemedi');
+        }
+        
+        updateStatus('Netlify CMS kontrol ediliyor...');
+        if (!window.CMS) {
+          throw new Error('Netlify CMS yüklenemedi');
+        }
+
+        updateStatus('Config dosyası kontrol ediliyor...');
+        const configResponse = await fetch('/admin/config.yml');
+        if (!configResponse.ok) {
+          throw new Error('Config dosyası bulunamadı');
+        }
+
+        updateStatus('Netlify Identity başlatılıyor...');
+        
+        // URL'deki recovery token'ı kontrol et
+        const urlParams = new URLSearchParams(window.location.hash.substring(1));
+        const recoveryToken = urlParams.get('recovery_token');
+        
+        if (recoveryToken) {
+          updateStatus('Şifre sıfırlama token\'ı bulundu');
+          showSuccess('E-postanızdan gelen davet linkine tıkladınız. Şimdi şifre oluşturabilirsiniz.');
+          setTimeout(() => {
+            netlifyIdentity.open();
+          }, 2000);
+          return;
+        }
+
+        // Identity olaylarını dinle
+        netlifyIdentity.on('init', user => {
+          updateStatus('Identity başlatıldı');
+          if (!user) {
+            updateStatus('Kullanıcı bulunamadı - giriş gerekli');
+            document.getElementById('manual-actions').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+          } else {
+            updateStatus(`Hoş geldiniz: ${user.email}`);
+            showSuccess(`Admin paneline hoş geldiniz, ${user.email}!`);
+            setTimeout(() => {
+              // CMS'i başlat
+              window.location.reload();
+            }, 2000);
+          }
+        });
+
+        netlifyIdentity.on('login', user => {
+          updateStatus('Giriş başarılı!');
+          showSuccess('Giriş başarılı! Sayfa yenileniyor...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        });
+
+        netlifyIdentity.on('signup', user => {
+          updateStatus('Kayıt başarılı!');
+          showSuccess('Kayıt başarılı! E-postanızı doğrulayın.');
+        });
+
+        netlifyIdentity.on('error', err => {
+          console.error('Identity Error:', err);
+          showError(`Identity hatası: ${err.message}`);
+        });
+
+        // Identity'i başlat
+        netlifyIdentity.init({
+          APIUrl: 'https://loesscafe.netlify.app/.netlify/identity'
+        });
+
+      } catch (error) {
+        console.error('Initialization Error:', error);
+        showError(`Başlatma hatası: ${error.message}`);
+      }
+    }
+
+    // Sayfa yüklendikten sonra başlat
+    window.addEventListener('load', () => {
+      setTimeout(initializeAdmin, 1000);
     });
   </script>
 </body>
