@@ -10,7 +10,9 @@ collections:
     label: "Menü Öğeleri"
     folder: "src/data/items"
     create: true
-    slug: "{{category}}-{{slug}}"
+    slug: "{{category}}-{{fields.name}}"
+    format: 'json'
+    extension: 'json'
     fields:
       - {label: "İsim", name: "name", widget: "string"}
       - label: "Kategori"
@@ -25,11 +27,11 @@ collections:
           - {label: "Spesiyel", value: "spesiyel"}
           - {label: "Meşrubatlar", value: "mesrubatlar"}
           - {label: "Tatlılar", value: "tatlilar"}
-      - {label: "Fiyat", name: "price", widget: "string", pattern: ["\\d+₺", "Lütfen '45₺' formatında fiyat girin"]}
+      - {label: "Fiyat", name: "price", widget: "string"}
       - {label: "Açıklama", name: "description", widget: "text"}
       - {label: "Fotoğraf", name: "image", widget: "image"}
-      - {label: "ID", name: "id", widget: "number", hint: "Benzersiz numara"}
-      
+      - {label: "ID", name: "id", widget: "uuid"}
+
   - name: "cafe-settings"
     label: "Kafe Ayarları"
     files:

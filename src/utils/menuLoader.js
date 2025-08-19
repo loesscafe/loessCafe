@@ -2,27 +2,54 @@
 
 export const loadMenuData = async () => {
   try {
-    // Menü verilerini public/data/items/menu.json'dan çek
-    const res = await fetch('/data/items/menu.json');
-    if (!res.ok) throw new Error('Menü verisi bulunamadı');
-    const data = await res.json();
-
-    // Kategorileri kontrol et, eksikse boş array ata
     const categories = [
-      'sicakIcecekler', 'turkKahvesi', 'sicakKahveler',
-      'sogukKahveler', 'frozenMilkshake', 'spesiyel',
-      'mesrubatlar', 'tatlilar'
+      'sicakIcecekler',
+      'turkKahvesi', 
+      'sicakKahveler',
+      'sogukKahveler',
+      'frozenMilkshake',
+      'spesiyel',
+      'mesrubatlar',
+      'tatlilar'
     ];
 
-    categories.forEach(cat => {
-      if (!data[cat]) data[cat] = [];
+    const menuData = {};
+
+    // Her kategori için boş dizi ile başla
+    categories.forEach(category => {
+      menuData[category] = [];
     });
 
-    return data;
-  } catch (err) {
-    console.error('Menü verisi yüklenirken hata:', err);
+    // Items klasöründeki tüm JSON dosyalarını yükle
+    try {
+      // Webpack context ile tüm JSON dosyalarını yükle
+      const context = require.context('../data/items', false, /\.json$/);
+      
+      context.keys().forEach(key => {
+        try {
+          const item = context(key);
+          const category = item.category;
+          
+          if (category && menuData[category]) {
+            menuData[category].push(item);
+          }
+        } catch (error) {
+          console.warn(`Item yüklenemedi: ${key}`, error);
+        }
+      });
+    } catch (error) {
+      console.warn('Items klasörü bulunamadı veya boş:', error);
+    }
 
-    // Fallback: boş menü
+    // Her kategoriyi ID'ye göre sırala
+    Object.keys(menuData).forEach(category => {
+      menuData[category].sort((a, b) => (a.id || 0) - (b.id || 0));
+    });
+
+    return menuData;
+  } catch (error) {
+    console.error('Menu data yüklenemedi:', error);
+    // Hata durumunda boş kategoriler döndür
     return {
       sicakIcecekler: [],
       turkKahvesi: [],
@@ -38,12 +65,11 @@ export const loadMenuData = async () => {
 
 export const loadCafeInfo = async () => {
   try {
-    const res = await fetch('/data/cafeInfo.json');
-    if (!res.ok) throw new Error('Kafe bilgisi bulunamadı');
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.warn('Kafe bilgileri yüklenemedi, varsayılan değerler kullanılıyor:', err);
+    const cafeInfo = await import('../data/cafeInfo.json');
+    return cafeInfo.default || cafeInfo;
+  } catch (error) {
+    console.warn('Cafe info yüklenemedi:', error);
+    // Varsayılan değerler
     return {
       name: "LOESS",
       mainSlogan: "Bohem dokunuş, eşsiz lezzet",
