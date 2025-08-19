@@ -1,5 +1,3 @@
-// src/utils/menuLoader.js
-
 export const loadMenuData = async () => {
   try {
     const categories = [
@@ -20,23 +18,29 @@ export const loadMenuData = async () => {
       menuData[category] = [];
     });
 
-    // Items klasöründeki tüm JSON dosyalarını yükle
     try {
-      // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
       
       context.keys().forEach(key => {
         try {
           const item = context(key);
           const category = item.category;
-          
+
           if (category && menuData[category]) {
+            // Eğer JSON dosyasında order yoksa 9999 verelim ki en sona gelsin
+            if (!('order' in item)) item.order = 9999;
             menuData[category].push(item);
           }
         } catch (error) {
           console.warn(`Item yüklenemedi: ${key}`, error);
         }
       });
+
+      // Kategorilerdeki öğeleri order alanına göre sırala
+      Object.keys(menuData).forEach(cat => {
+        menuData[cat].sort((a, b) => (a.order || 9999) - (b.order || 9999));
+      });
+
     } catch (error) {
       console.warn('Items klasörü bulunamadı veya boş:', error);
     }
@@ -44,7 +48,6 @@ export const loadMenuData = async () => {
     return menuData;
   } catch (error) {
     console.error('Menu data yüklenemedi:', error);
-    // Hata durumunda boş kategoriler döndür
     return {
       sicakIcecekler: [],
       turkKahvesi: [],
@@ -54,25 +57,6 @@ export const loadMenuData = async () => {
       spesiyel: [],
       mesrubatlar: [],
       tatlilar: []
-    };
-  }
-};
-
-export const loadCafeInfo = async () => {
-  try {
-    const cafeInfo = await import('../data/cafeInfo.json');
-    return cafeInfo.default || cafeInfo;
-  } catch (error) {
-    console.warn('Cafe info yüklenemedi:', error);
-    // Varsayılan değerler
-    return {
-      name: "LOESS",
-      mainSlogan: "Bohem dokunuş, eşsiz lezzet",
-      subSlogan: "Bohem atmosferde lezzet yolculuğu",
-      phone: "0XXX XXX XX XX",
-      openingTime: "14:00",
-      closingTime: "02:00",
-      logo: "/images/kahve-icon.png"
     };
   }
 };

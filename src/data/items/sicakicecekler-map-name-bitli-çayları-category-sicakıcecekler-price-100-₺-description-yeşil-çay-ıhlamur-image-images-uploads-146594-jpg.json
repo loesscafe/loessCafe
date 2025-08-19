@@ -3,5 +3,6 @@
   "category": "sicakIcecekler",
   "price": "100 ₺",
   "description": "Yeşil Çay, Ihlamur",
-  "image": "/images/uploads/146594.jpg"
+  "image": "/images/uploads/146594.jpg",
+  "order": 3
 }
