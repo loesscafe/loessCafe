@@ -1,7 +1,7 @@
 // src/components/Menu.js
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Coffee, Thermometer, Snowflake, Martini, Wine, Cookie, Droplets, ChevronDown } from 'lucide-react';
+import { Coffee, Thermometer, Snowflake, Martini, Wine, Cookie, Droplets, ChevronDown, CoffeeIcon, Flame, IceCream2, Sparkles, Grape, Cake } from 'lucide-react';
 import { loadMenuData, loadCafeInfo } from '../utils/menuLoader';
 import './Menu.css';
 
@@ -16,12 +16,12 @@ const Menu = () => {
   const categories = [
     { id: 'sicakIcecekler', name: 'Sıcak İçecekler', icon: Thermometer },
     { id: 'turkKahvesi', name: 'Türk Kahvesi', icon: Coffee },
-    { id: 'sicakKahveler', name: 'Sıcak Kahveler', icon: Coffee },
+    { id: 'sicakKahveler', name: 'Sıcak Kahveler', icon: Flame },
     { id: 'sogukKahveler', name: 'Soğuk Kahveler', icon: Snowflake },
-    { id: 'frozenMilkshake', name: 'Frozen & Milkshake', icon: Droplets },
-    { id: 'spesiyel', name: 'SPESİYEL', icon: Martini },
-    { id: 'mesrubatlar', name: 'Meşrubatlar', icon: Wine },
-    { id: 'tatlilar', name: 'Tatlılar', icon: Cookie }
+    { id: 'frozenMilkshake', name: 'Frozen & Milkshake', icon: IceCream2 },
+    { id: 'spesiyel', name: 'SPESİYEL', icon: Sparkles },
+    { id: 'mesrubatlar', name: 'Meşrubatlar', icon: Grape },
+    { id: 'tatlilar', name: 'Tatlılar', icon: Cake }
   ];
 
   // Veri yükleme
@@ -34,7 +34,16 @@ const Menu = () => {
           loadCafeInfo()
         ]);
         
-        setMenuData(loadedMenuData);
+        // Verileri sırala - ilk eklenen en üstte olsun
+        const sortedMenuData = {};
+        Object.keys(loadedMenuData).forEach(category => {
+          sortedMenuData[category] = loadedMenuData[category].sort((a, b) => {
+            // Alfabetik sıralama ile ilk eklenen en üstte olacak
+            return a.name.localeCompare(b.name);
+          });
+        });
+        
+        setMenuData(sortedMenuData);
         setCafeInfo(loadedCafeInfo);
       } catch (error) {
         console.error('Veri yükleme hatası:', error);
@@ -107,7 +116,6 @@ const Menu = () => {
   return (
     <div className="menu-container" ref={menuRef}>
       {/* Header */}
-{/* Header */}
       <div className="header">
         <div className="header-content">
           <div className="header-logo">
@@ -138,7 +146,7 @@ const Menu = () => {
               <button
                 key={category.id}
                 onClick={() => handleCategoryChange(category.id)}
-                className={`nav-button ${selectedCategory === category.id ? 'active' : ''}`}
+                className={`nav-button ${selectedCategory === category.id ? 'active' : ''} ${category.id === 'spesiyel' ? 'special-category' : ''}`}
               >
                 <IconComponent size={18} />
                 <span>{category.name}</span>

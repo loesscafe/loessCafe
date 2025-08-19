@@ -433,12 +433,12 @@
           }
           
           .header {
-            padding: 40px 15px;
+            padding: 15px 15px;
           }
           
           .header-logo-png {
-            width: 70px;
-            height: 70px;
+            width: 130px;
+            height: 130px;
           }
           
           .navigation {
@@ -461,8 +461,8 @@
         }
 
         .logo-png {
-          width: 120px;   /* Biraz daha büyük */
-          height: 120px;  /* Oranı korumak için aynı değer */
+          width: 150px;   /* Biraz daha büyük */
+          height: 150px;  /* Oranı korumak için aynı değer */
           object-fit: contain;
           margin-bottom: 10px; /* Logoyla yazılar arasına boşluk */
         }
@@ -555,9 +555,22 @@
           }
         }
 
-        @media (max-width: 480px) {
-          .nav-button {
-            min-width: 100%;
-            margin-bottom: 0.5rem;
-          }
-        }
+   @media (max-width: 768px) {
+  .nav-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center; /* ikonları ortala */
+  }
+
+  .nav-button {
+    flex: 0 1 auto;
+    min-width: auto;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+
+  .nav-button span,
+  .nav-button .item-count {
+    display: none; /* Yazıları ve sayıları gizle */
+  }
+}
