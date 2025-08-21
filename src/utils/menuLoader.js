@@ -24,30 +24,63 @@ export const loadMenuData = async () => {
       // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
       
-      // Dosya adlarına göre sıralama için dosya listesi al
-      const fileKeys = context.keys().sort();
+      // Tüm dosyaları yükle ve bilgileri topla
+      const allItems = [];
       
-      let autoId = 1; // otomatik id sayaç
-
-      fileKeys.forEach(key => {
+      context.keys().forEach(key => {
         try {
           const item = context(key);
           const category = item.category;
           
           if (category && menuData[category]) {
-            // Her item'e otomatik id ata (dosya sırasına göre)
-            item.id = autoId++;
-            menuData[category].push(item);
+            // Dosya adından tarih çıkar (Netlify CMS dosya adı formatı)
+            // Format: category-slug-timestamp veya category-slug
+            const fileName = key.replace('./', '').replace('.json', '');
+            
+            // Eğer item'de zaten id varsa onu kullan, yoksa dosya adından çıkar
+            let itemId = item.id;
+            if (!itemId) {
+              // Dosya adından timestamp'i bul veya dosya adı sırasına göre ID ver
+              const parts = fileName.split('-');
+              const lastPart = parts[parts.length - 1];
+              
+              // Eğer son kısım sayıysa (timestamp benzeri) onu kullan
+              if (/^\d+$/.test(lastPart)) {
+                itemId = parseInt(lastPart);
+              } else {
+                // Yoksa dosya adına göre hash oluştur (tutarlı sıralama için)
+                itemId = fileName.split('').reduce((hash, char) => {
+                  return char.charCodeAt(0) + ((hash << 5) - hash);
+                }, 0);
+              }
+            }
+            
+            allItems.push({
+              ...item,
+              _fileName: fileName,
+              _fileId: itemId
+            });
           }
         } catch (error) {
           console.warn(`Item yüklenemedi: ${key}`, error);
         }
       });
-
-      // Kategorilerdeki öğeleri id'ye göre sırala
-      Object.keys(menuData).forEach(cat => {
-        menuData[cat].sort((a, b) => (a.id || 9999) - (b.id || 9999));
+      
+      // Tüm items'ları file ID'ye göre sırala (küçükten büyüğe = eski -> yeni)
+      allItems.sort((a, b) => a._fileId - b._fileId);
+      
+      // Sıralı ID'ler ata (1, 2, 3...)
+      allItems.forEach((item, index) => {
+        item.id = index + 1;
+        
+        // Kategoriye ekle
+        if (menuData[item.category]) {
+          menuData[item.category].push(item);
+        }
       });
+
+      // Kategorilerdeki öğeleri zaten sıralı, tekrar sıralamaya gerek yok
+      // Çünkü allItems zaten sıralı ve kategorilere sırayla eklendi
 
     } catch (error) {
       console.warn('Items klasörü bulunamadı veya boş:', error);
