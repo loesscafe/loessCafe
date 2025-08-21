@@ -15,7 +15,7 @@ collections:
     format: 'json'
     extension: 'json'
     fields:
-      - {label: "Ekleme Zamanı", name: "addedAt", widget: "datetime", default: "", format: "YYYY-MM-DD HH:mm:ss"}
+      - {label: "ID (Sıralama)", name: "id", widget: "number", hint: "Otomatik artan numara - küçük sayı = üstte görünür"}
       - {label: "İsim", name: "name", widget: "string"}
       - label: "Kategori"
         name: "category"

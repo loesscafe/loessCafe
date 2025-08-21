@@ -33,43 +33,34 @@ export const loadMenuData = async () => {
           const category = item.category;
           
           if (category && menuData[category]) {
-            // Dosya adından timestamp çıkar veya addedAt kullan
-            const fileName = key.replace('./', '').replace('.json', '');
-            let sortOrder = 0;
-            
-            if (item.addedAt) {
-              // addedAt varsa onu kullan (yeni sistem)
-              sortOrder = new Date(item.addedAt).getTime();
-            } else {
-              // addedAt yoksa dosya adından timestamp çıkarmaya çalış (eski dosyalar)
-              const timestampMatch = fileName.match(/-(\d{10,})$/); // Unix timestamp
-              if (timestampMatch) {
-                sortOrder = parseInt(timestampMatch[1]);
-              } else {
-                // Hiçbiri yoksa dosya adından hash (en eski dosyalar için)
-                sortOrder = fileName.split('').reduce((hash, char) => {
-                  return char.charCodeAt(0) + ((hash << 5) - hash);
-                }, 0);
-              }
-            }
-            
-            allItems.push({
-              ...item,
-              _sortOrder: sortOrder
-            });
+            allItems.push(item);
           }
         } catch (error) {
           console.warn(`Item yüklenemedi: ${key}`, error);
         }
       });
       
-      // Timestamp'e göre sırala (küçükten büyüğe = eski -> yeni)
-      allItems.sort((a, b) => a._sortOrder - b._sortOrder);
+      // Mevcut ID'leri kontrol et ve otomatik ID ata
+      let maxId = 0;
+      allItems.forEach(item => {
+        if (item.id && item.id > maxId) {
+          maxId = item.id;
+        }
+      });
       
-      // Sıralı ID'ler ata ve kategorilere dağıt
-      allItems.forEach((item, index) => {
-        item.id = index + 1;
-        
+      // ID'si olmayan items'lara otomatik ID ata
+      allItems.forEach(item => {
+        if (!item.id) {
+          maxId++;
+          item.id = maxId;
+        }
+      });
+      
+      // ID'ye göre sırala (küçük ID = üstte)
+      allItems.sort((a, b) => (a.id || 9999) - (b.id || 9999));
+      
+      // Kategorilere dağıt
+      allItems.forEach(item => {
         if (menuData[item.category]) {
           menuData[item.category].push(item);
         }
