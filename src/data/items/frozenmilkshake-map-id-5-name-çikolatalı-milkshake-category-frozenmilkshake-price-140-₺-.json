@@ -1,6 +1,7 @@
 {
   "id": 5,
-  "name": "Çikolatalı Milkshake",
+  "name": "Milkshake",
   "category": "frozenMilkshake",
-  "price": "140 ₺"
+  "price": "140 ₺",
+  "description": "Çikolatalı, Çilekli, Vanilyalı, Oreolu"
 }
