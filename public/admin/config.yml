@@ -11,10 +11,11 @@ collections:
     label: "Menü Öğeleri"
     folder: "src/data/items"
     create: true
-    slug: "{{fields.category}}-{{slug}}"
+    slug: "{{fields.category}}-{{slug}}-{{timestamp}}"
     format: 'json'
     extension: 'json'
     fields:
+      - {label: "Ekleme Zamanı", name: "addedAt", widget: "datetime", default: "", format: "YYYY-MM-DD HH:mm:ss"}
       - {label: "İsim", name: "name", widget: "string"}
       - label: "Kategori"
         name: "category"

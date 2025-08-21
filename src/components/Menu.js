@@ -34,12 +34,12 @@ const Menu = () => {
           loadCafeInfo()
         ]);
         
-        // Verileri sırala - ilk eklenen en üstte olsun
+        // Verileri ID'ye göre sırala - küçük ID'ler (ilk eklenen) en üstte
         const sortedMenuData = {};
         Object.keys(loadedMenuData).forEach(category => {
           sortedMenuData[category] = loadedMenuData[category].sort((a, b) => {
-            // Alfabetik sıralama ile ilk eklenen en üstte olacak
-            return a.name.localeCompare(b.name);
+            // ID'ye göre sıralama - küçük ID önce gelsin
+            return (a.id || 999999) - (b.id || 999999);
           });
         });
         

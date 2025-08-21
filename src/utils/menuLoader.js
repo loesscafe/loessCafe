@@ -24,7 +24,7 @@ export const loadMenuData = async () => {
       // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
       
-      // Tüm dosyaları yükle ve bilgileri topla
+      // Tüm dosyaları yükle
       const allItems = [];
       
       context.keys().forEach(key => {
@@ -33,23 +33,21 @@ export const loadMenuData = async () => {
           const category = item.category;
           
           if (category && menuData[category]) {
-            // Dosya adından tarih çıkar (Netlify CMS dosya adı formatı)
-            // Format: category-slug-timestamp veya category-slug
+            // Dosya adından timestamp çıkar veya addedAt kullan
             const fileName = key.replace('./', '').replace('.json', '');
+            let sortOrder = 0;
             
-            // Eğer item'de zaten id varsa onu kullan, yoksa dosya adından çıkar
-            let itemId = item.id;
-            if (!itemId) {
-              // Dosya adından timestamp'i bul veya dosya adı sırasına göre ID ver
-              const parts = fileName.split('-');
-              const lastPart = parts[parts.length - 1];
-              
-              // Eğer son kısım sayıysa (timestamp benzeri) onu kullan
-              if (/^\d+$/.test(lastPart)) {
-                itemId = parseInt(lastPart);
+            if (item.addedAt) {
+              // addedAt varsa onu kullan (yeni sistem)
+              sortOrder = new Date(item.addedAt).getTime();
+            } else {
+              // addedAt yoksa dosya adından timestamp çıkarmaya çalış (eski dosyalar)
+              const timestampMatch = fileName.match(/-(\d{10,})$/); // Unix timestamp
+              if (timestampMatch) {
+                sortOrder = parseInt(timestampMatch[1]);
               } else {
-                // Yoksa dosya adına göre hash oluştur (tutarlı sıralama için)
-                itemId = fileName.split('').reduce((hash, char) => {
+                // Hiçbiri yoksa dosya adından hash (en eski dosyalar için)
+                sortOrder = fileName.split('').reduce((hash, char) => {
                   return char.charCodeAt(0) + ((hash << 5) - hash);
                 }, 0);
               }
@@ -57,8 +55,7 @@ export const loadMenuData = async () => {
             
             allItems.push({
               ...item,
-              _fileName: fileName,
-              _fileId: itemId
+              _sortOrder: sortOrder
             });
           }
         } catch (error) {
@@ -66,14 +63,13 @@ export const loadMenuData = async () => {
         }
       });
       
-      // Tüm items'ları file ID'ye göre sırala (küçükten büyüğe = eski -> yeni)
-      allItems.sort((a, b) => a._fileId - b._fileId);
+      // Timestamp'e göre sırala (küçükten büyüğe = eski -> yeni)
+      allItems.sort((a, b) => a._sortOrder - b._sortOrder);
       
-      // Sıralı ID'ler ata (1, 2, 3...)
+      // Sıralı ID'ler ata ve kategorilere dağıt
       allItems.forEach((item, index) => {
         item.id = index + 1;
         
-        // Kategoriye ekle
         if (menuData[item.category]) {
           menuData[item.category].push(item);
         }
