@@ -1,7 +1,7 @@
 // src/components/Menu.js
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Coffee, Thermometer, Snowflake, Martini, Wine, Cookie, Droplets, ChevronDown, CoffeeIcon, Flame, IceCream2, Sparkles, Grape, Cake } from 'lucide-react';
+import { Coffee, Wine, Snowflake, Martini, ChevronDown, Flame, IceCream2, Cake, Soup, Droplets } from 'lucide-react';
 import { loadMenuData, loadCafeInfo } from '../utils/menuLoader';
 import './Menu.css';
 
@@ -14,13 +14,13 @@ const Menu = () => {
   const menuRef = useRef(null);
 
   const categories = [
-    { id: 'sicakIcecekler', name: 'Sıcak İçecekler', icon: Thermometer },
-    { id: 'turkKahvesi', name: 'Türk Kahvesi', icon: Coffee },
-    { id: 'sicakKahveler', name: 'Sıcak Kahveler', icon: Flame },
-    { id: 'sogukKahveler', name: 'Soğuk Kahveler', icon: Snowflake },
+    { id: 'sicakIcecekler', name: 'Sıcak İçecekler', icon: Soup },
+    { id: 'turkKahvesi', name: 'Türk Kahvesi', icon: Flame },
+    { id: 'sicakKahveler', name: 'Sıcak Kahveler', icon: Coffee },
+    { id: 'sogukKahveler', name: 'Soğuk Kahveler', icon: Droplets },
     { id: 'frozenMilkshake', name: 'Frozen & Milkshake', icon: IceCream2 },
-    { id: 'spesiyel', name: 'SPESİYEL', icon: Sparkles },
-    { id: 'mesrubatlar', name: 'Meşrubatlar', icon: Grape },
+    { id: 'spesiyel', name: 'SPESİYEL', icon: Martini },
+    { id: 'mesrubatlar', name: 'Meşrubatlar', icon: Wine },
     { id: 'tatlilar', name: 'Tatlılar', icon: Cake }
   ];
 

@@ -574,3 +574,92 @@
     display: none; /* Yazıları ve sayıları gizle */
   }
 }
+
+/* Spesiyel kategori için özel stiller */
+.nav-button.special-category {
+  position: relative;
+  background: linear-gradient(135deg, #d4af37, #b8860b) !important;
+  color: white !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  transform: scale(1.02);
+  animation: specialGlow 3s ease-in-out infinite;
+}
+
+.nav-button.special-category:hover {
+  background: linear-gradient(135deg, #ffd700, #daa520) !important;
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+}
+
+.nav-button.special-category.active {
+  background: linear-gradient(135deg, #ffd700, #b8860b) !important;
+  box-shadow: 0 6px 30px rgba(255, 215, 0, 0.6);
+  transform: scale(1.08) translateY(-1px);
+}
+
+/* Hafif parıltı animasyonu */
+@keyframes specialGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* İkon için özel efekt */
+.nav-button.special-category svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  animation: iconShine 4s ease-in-out infinite;
+}
+
+@keyframes iconShine {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Mobil responsive */
+@media (max-width: 768px) {
+  .nav-button.special-category {
+    transform: scale(1.05);
+    border-width: 1px;
+  }
+  
+  .nav-button.special-category:hover {
+    transform: scale(1.08);
+  }
+  
+  .nav-button.special-category.active {
+    transform: scale(1.1);
+  }
+}
+
+/* Alternatif: Daha subtle bir yaklaşım istersen */
+/*
+.nav-button.special-category {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(184, 134, 11, 0.1)) !important;
+  border: 2px solid #d4af37;
+  color: #b8860b !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-button.special-category::before {
+  content: '⭐';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.7rem;
+  animation: starTwinkle 2s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+*/
