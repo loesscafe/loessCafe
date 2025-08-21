@@ -15,7 +15,7 @@ collections:
     format: 'json'
     extension: 'json'
     fields:
-      - {label: "ID (Sıralama)", name: "id", widget: "number", hint: "Otomatik artan numara - küçük sayı = üstte görünür"}
+     - {label: "ID (Sıralama)", name: "id", widget: "number", default: 1, hint: "Otomatik atanır, elle değiştirmenize gerek yok"}
       - {label: "İsim", name: "name", widget: "string"}
       - label: "Kategori"
         name: "category"
