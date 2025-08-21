@@ -15,16 +15,8 @@ collections:
     format: 'json'
     extension: 'json'
     fields:
-      - label: "ID (Sıralama)"
-        name: "id"
-        widget: "number"
-        default: 1
-        hint: "Otomatik atanır, elle değiştirmenize gerek yok"
-
-      - label: "İsim"
-        name: "name"
-        widget: "string"
-
+     - {label: "ID (Sıralama)", name: "id", widget: "number", default: 1, hint: "Otomatik atanır, elle değiştirmenize gerek yok"}
+      - {label: "İsim", name: "name", widget: "string"}
       - label: "Kategori"
         name: "category"
         widget: "select"
@@ -37,20 +29,9 @@ collections:
           - {label: "Spesiyel", value: "spesiyel"}
           - {label: "Meşrubatlar", value: "mesrubatlar"}
           - {label: "Tatlılar", value: "tatlilar"}
-
-      - label: "Fiyat"
-        name: "price"
-        widget: "string"
-
-      - label: "Açıklama"
-        name: "description"
-        widget: "text"
-        required: false
-
-      - label: "Fotoğraf"
-        name: "image"
-        widget: "image"
-        required: false
+      - {label: "Fiyat", name: "price", widget: "string"}
+      - {label: "Açıklama", name: "description", widget: "text", required: false}
+      - {label: "Fotoğraf", name: "image", widget: "image", required: false}
 
   - name: "cafe-settings"
     label: "Kafe Ayarları"
@@ -59,37 +40,10 @@ collections:
         name: "info"
         file: "src/data/cafeInfo.json"
         fields:
-          - label: "Kafe Adı"
-            name: "name"
-            widget: "string"
-            default: "LOESS"
-
-          - label: "Ana Slogan"
-            name: "mainSlogan"
-            widget: "string"
-            default: "Bohem dokunuş, eşsiz lezzet"
-
-          - label: "Alt Slogan"
-            name: "subSlogan"
-            widget: "string"
-            default: "Bohem atmosferde lezzet yolculuğu"
-
-          - label: "Telefon"
-            name: "phone"
-            widget: "string"
-            default: "0XXX XXX XX XX"
-
-          - label: "Açılış Saati"
-            name: "openingTime"
-            widget: "string"
-            default: "14:00"
-
-          - label: "Kapanış Saati"
-            name: "closingTime"
-            widget: "string"
-            default: "02:00"
-
-          - label: "Logo"
-            name: "logo"
-            widget: "image"
-            required: false
+          - {label: "Kafe Adı", name: "name", widget: "string", default: "LOESS"}
+          - {label: "Ana Slogan", name: "mainSlogan", widget: "string", default: "Bohem dokunuş, eşsiz lezzet"}
+          - {label: "Alt Slogan", name: "subSlogan", widget: "string", default: "Bohem atmosferde lezzet yolculuğu"}
+          - {label: "Telefon", name: "phone", widget: "string", default: "0XXX XXX XX XX"}
+          - {label: "Açılış Saati", name: "openingTime", widget: "string", default: "14:00"}
+          - {label: "Kapanış Saati", name: "closingTime", widget: "string", default: "02:00"}
+          - {label: "Logo", name: "logo", widget: "image", required: false}

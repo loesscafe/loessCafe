@@ -23,13 +23,15 @@ export const loadMenuData = async () => {
     try {
       // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
+      
+      // Tüm dosyaları yükle
       const allItems = [];
-
+      
       context.keys().forEach(key => {
         try {
           const item = context(key);
           const category = item.category;
-
+          
           if (category && menuData[category]) {
             allItems.push(item);
           }
@@ -37,38 +39,41 @@ export const loadMenuData = async () => {
           console.warn(`Item yüklenemedi: ${key}`, error);
         }
       });
-
-      // Kategorilere göre maxId tut
-      const categoryMaxIds = {};
-
+      
+      // Mevcut ID'leri kontrol et ve otomatik ID ata
+      let maxId = 0;
       allItems.forEach(item => {
-        const category = item.category;
-        if (!category) return;
-
-        // Kategori için max id başlat
-        if (!categoryMaxIds[category]) {
-          categoryMaxIds[category] = 0;
+        if (item.id && item.id > maxId) {
+          maxId = item.id;
         }
-
-        // Kullanıcı CMS’te ne yazarsa yazsın → otomatik ID ata
-        categoryMaxIds[category]++;
-        item.id = categoryMaxIds[category];
-
-        // Kategorisine ekle
-        menuData[category].push(item);
+      });
+      
+      // ID'si olmayan items'lara otomatik ID ata
+      allItems.forEach(item => {
+        if (!item.id) {
+          maxId++;
+          item.id = maxId;
+        }
+      });
+      
+      // ID'ye göre sırala (küçük ID = üstte)
+      allItems.sort((a, b) => (a.id || 9999) - (b.id || 9999));
+      
+      // Kategorilere dağıt
+      allItems.forEach(item => {
+        if (menuData[item.category]) {
+          menuData[item.category].push(item);
+        }
       });
 
-      // Her kategoriyi ID’ye göre sırala (küçük ID üstte)
-      Object.keys(menuData).forEach(category => {
-        menuData[category].sort((a, b) => (a.id || 9999) - (b.id || 9999));
-      });
+      // Kategorilerdeki öğeleri zaten sıralı, tekrar sıralamaya gerek yok
+      // Çünkü allItems zaten sıralı ve kategorilere sırayla eklendi
 
     } catch (error) {
       console.warn('Items klasörü bulunamadı veya boş:', error);
     }
 
     return menuData;
-
   } catch (error) {
     console.error('Menu data yüklenemedi:', error);
     return {
@@ -90,6 +95,7 @@ export const loadCafeInfo = async () => {
     return cafeInfo.default || cafeInfo;
   } catch (error) {
     console.warn('Cafe info yüklenemedi:', error);
+    // Varsayılan değerler
     return {
       name: "LOESS",
       mainSlogan: "Bohem dokunuş, eşsiz lezzet",
