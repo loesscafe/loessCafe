@@ -6,8 +6,6 @@ site_url: https://loesscafe.netlify.app
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
-# media_library kısmını tamamen kaldırın
-
 collections:
   - name: "menu-items"
     label: "Menü Öğeleri"

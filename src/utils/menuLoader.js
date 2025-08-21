@@ -23,19 +23,20 @@ export const loadMenuData = async () => {
     try {
       // Webpack context ile tüm JSON dosyalarını yükle
       const context = require.context('../data/items', false, /\.json$/);
-
+      
+      // Dosya adlarına göre sıralama için dosya listesi al
+      const fileKeys = context.keys().sort();
+      
       let autoId = 1; // otomatik id sayaç
 
-      context.keys().forEach(key => {
+      fileKeys.forEach(key => {
         try {
           const item = context(key);
           const category = item.category;
-
+          
           if (category && menuData[category]) {
-            // Eğer id yoksa otomatik id ata
-            if (!('id' in item)) {
-              item.id = autoId++;
-            }
+            // Her item'e otomatik id ata (dosya sırasına göre)
+            item.id = autoId++;
             menuData[category].push(item);
           }
         } catch (error) {
@@ -43,7 +44,7 @@ export const loadMenuData = async () => {
         }
       });
 
-      // Kategorilerdeki öğeleri id alanına göre sırala
+      // Kategorilerdeki öğeleri id'ye göre sırala
       Object.keys(menuData).forEach(cat => {
         menuData[cat].sort((a, b) => (a.id || 9999) - (b.id || 9999));
       });
